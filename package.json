@@ -1,0 +1,11 @@
+{
+  "name": "gulptutorial2",
+  "version": "0.0.1",
+  "description": "A prooject to learn Gulp",
+  "repository": {
+    "type": "git",
+    "url": "?.git"
+  },
+  "author": "Anurup Borah",
+  "license": "ISC"
+}
