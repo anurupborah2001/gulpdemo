@@ -35,6 +35,7 @@ var build = "builds/",
     css = {
         in : saas + "style.scss",
         out : (!devBuild) ? cssDest : cssSource,
+        watch : [saas + "*.scss"],
         compassOpts : 
            { 
                 sass : saas,
@@ -67,6 +68,11 @@ gulp.task('compass',function(){
     gulp.src(css.in).pipe(compass(css.compassOpts)).on('error',gulputil.log).pipe(gulp.dest(css.out));
 });
 
+gulp.task('watch',function(){
+    gulp.watch(coffee.coffeeSources,['coffee']);
+    gulp.watch(js.jsSources,['js']);
+    gulp.watch(css.watch,['compass']);
+});
 
 gulp.task('default',['coffee','js','compass'],function(){
     
