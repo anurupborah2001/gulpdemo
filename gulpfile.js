@@ -8,7 +8,8 @@
 var gulp = require('gulp'),
     gulputil = require('gulp-util'),
     gulpcoffee = require('gulp-coffee'),
-    concat = require('gulp-concat');
+    concat = require('gulp-concat'),
+    browserify = require('gulp-browserify');
 
 //Assign Variable
 var build = "builds/",
@@ -40,5 +41,9 @@ gulp.task('coffee',function(){
 })
 
 gulp.task('js',function(){
-    gulp.src(js.jsSources).pipe(concat('script.js')).pipe(gulp.dest(js.source));
+    gulp.src(js.jsSources).pipe(concat('script.js')).pipe(browserify()).pipe(gulp.dest(js.source));
 });
+
+gulp.task('default',['coffee','js'],function(){
+    
+})
