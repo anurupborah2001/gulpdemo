@@ -12,6 +12,7 @@ var gulp = require('gulp'),
     browserify = require('gulp-browserify'),
     connect = require('gulp-connect'),
     gulpif = require('gulp-if'),
+    minifyHTML = require('gulp-minify-html'),
     uglify =  require('gulp-uglify'),
     compass= require('gulp-compass');
 
@@ -70,11 +71,11 @@ var
         },
     html = {
        in : envOutputDir + "*.html",
-       out : envOutputDir
-       
+       out : envOutputDir,
+       devPath : source + "*.html"
     },
     json = {
-        in : jsSource + "*.json"
+        in : source + "*.json"
     };
 
 gulp.task('coffee',function(){
@@ -90,19 +91,18 @@ gulp.task('compass',function(){
 });
 
 gulp.task('html',function(){
-   gulp.src(html.in).pipe(gulp.dest(html.out)).pipe (connect.reload());  
+   gulp.src(html.devPath).pipe(gulpif(!devBuild,minifyHTML())).pipe(gulpif(!devBuild,gulp.dest(html.out))).pipe (connect.reload());  
 });
 
 gulp.task('json',function(){
    gulp.src(json.in).pipe(connect.reload());
-   
 });
 
 gulp.task('watch',function(){
     gulp.watch(coffee.coffeeSources,['coffee']);
     gulp.watch(js.jsSources,['js']);
     gulp.watch(css.watch,['compass']);
-    gulp.watch(html.in,['html']);
+    gulp.watch(html.devPath,['html']);
     gulp.watch(json.in,['json']);
 });
 
