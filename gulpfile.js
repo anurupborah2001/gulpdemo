@@ -11,6 +11,8 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     browserify = require('gulp-browserify'),
     connect = require('gulp-connect'),
+    gulpif = require('gulp-if'),
+    uglify =  require('gulp-uglify'),
     compass= require('gulp-compass');
 
 //Assign Variable
@@ -24,7 +26,6 @@ var build = "builds/",
   if(!devBuild){
         envOutputDir = dest;
         sassStyle='compressed';
-        console.log(sassStyle);
     }
     
 var 
@@ -81,7 +82,7 @@ gulp.task('coffee',function(){
 })
 
 gulp.task('js',function(){
-    gulp.src(js.jsSources).pipe(concat('script.js')).pipe(browserify()).pipe(gulp.dest(js.source)).pipe(connect.reload());
+    gulp.src(js.jsSources).pipe(concat('script.js')).pipe(browserify()).pipe(gulpif(!devBuild,uglify())).pipe(gulp.dest(js.source)).pipe(connect.reload());
 });
 
 gulp.task('compass',function(){
