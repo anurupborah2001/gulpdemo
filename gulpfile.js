@@ -15,6 +15,8 @@ var gulp = require('gulp'),
     minifyHTML = require('gulp-minify-html'),
     uglify =  require('gulp-uglify'),
     jsonMinify = require('gulp-jsonminify'),
+    imagemin = require('gulp-imagemin'),
+    pngcrush = require('imagemin-pngcrush'),
     compass= require('gulp-compass');
 
 //Assign Variable
@@ -34,6 +36,7 @@ var
     components = "components/",
     coffeePath =  components + "coffee/",
     imageSource = envOutputDir + "images/",
+    imageDev = source + "images/",
     cssSource =  envOutputDir + "css/",
     jsSource = envOutputDir + "js/",
     jsDev = source + "js/*.json",
@@ -53,14 +56,21 @@ var
         in : saas + "style.scss",
         out : cssSource,
         watch : [saas + "*.scss"],
-        compassOpts : 
-           { 
+        compassOpts : { 
                 sass : saas,
                 image : imageSource,
                 style : sassStyle
         }
     },
-   
+   images = {
+       in  : imageDev + "**/*.*",
+       out : imageSource,
+       imagminOpts : {
+           progressive  :true,
+           svgoPlugins : [{ removeViewBox : false }],
+           use : [pngcrush()]
+       }
+   },
     js = {
         in : jsPath,
         source : jsSource,
@@ -93,6 +103,10 @@ gulp.task('compass',function(){
     gulp.src(css.in).pipe(compass(css.compassOpts)).on('error',gulputil.log).pipe(gulp.dest(css.out)).pipe(connect.reload());
 });
 
+gulp.task('images',function(){
+    gulp.src(images.in).pipe(gulpif(!devBuild,imagemin(images.imagminOpts))).pipe(gulpif(!devBuild,gulp.dest(images.out))).pipe(connect.reload());
+});
+
 gulp.task('html',function(){
    gulp.src(html.devPath).pipe(gulpif(!devBuild,minifyHTML())).pipe(gulpif(!devBuild,gulp.dest(html.out))).pipe (connect.reload());  
 });
@@ -107,6 +121,7 @@ gulp.task('watch',function(){
     gulp.watch(css.watch,['compass']);
     gulp.watch(html.devPath,['html']);
     gulp.watch(json.in,['json']);
+    gulp.watch(images.in,['images']);
 });
 
 
@@ -114,6 +129,6 @@ gulp.task('connect',function(){
    connect.server(connectOpts);
 });
 
-gulp.task('default',['html','json','coffee','js','compass','connect','watch'],function(){
+gulp.task('default',['html','json','coffee','js','compass','images','connect','watch'],function(){
     
 })
