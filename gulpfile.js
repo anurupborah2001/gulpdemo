@@ -14,6 +14,7 @@ var gulp = require('gulp'),
     gulpif = require('gulp-if'),
     minifyHTML = require('gulp-minify-html'),
     uglify =  require('gulp-uglify'),
+    jsonMinify = require('gulp-jsonminify'),
     compass= require('gulp-compass');
 
 //Assign Variable
@@ -35,6 +36,7 @@ var
     imageSource = envOutputDir + "images/",
     cssSource =  envOutputDir + "css/",
     jsSource = envOutputDir + "js/",
+    jsDev = source + "js/*.json",
     saas =  components + "sass/",
     jsPath = components + "scripts/";
     
@@ -75,7 +77,8 @@ var
        devPath : source + "*.html"
     },
     json = {
-        in : source + "*.json"
+        in : jsDev,
+        out : jsSource
     };
 
 gulp.task('coffee',function(){
@@ -95,7 +98,7 @@ gulp.task('html',function(){
 });
 
 gulp.task('json',function(){
-   gulp.src(json.in).pipe(connect.reload());
+   gulp.src(json.in).pipe(gulpif(!devBuild,jsonMinify())).pipe(gulpif(!devBuild,gulp.dest(json.out))).pipe(connect.reload());
 });
 
 gulp.task('watch',function(){
