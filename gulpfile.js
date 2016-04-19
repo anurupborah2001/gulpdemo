@@ -17,42 +17,49 @@ var gulp = require('gulp'),
 var build = "builds/",
     source = build + "development/",
     dest =  build + "production/",
+    devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase()!=='production'),
+    envOutputDir=source,
+    sassStyle='expanded';
+    
+  if(!devBuild){
+        envOutputDir = dest;
+        sassStyle='compressed';
+        console.log(sassStyle);
+    }
+    
+var 
     components = "components/",
     coffeePath =  components + "coffee/",
-    imageSource = source + "images/",
-    imageDest = dest + + "images/",
-    cssSource =  source + "css/",
-    cssDest = dest + + "css/",
-    jsSource = source + "js/",
-    jsDest =  dest + "js/",
+    imageSource = envOutputDir + "images/",
+    cssSource =  envOutputDir + "css/",
+    jsSource = envOutputDir + "js/",
     saas =  components + "sass/",
-    jsPath = components + "scripts/",
-    devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase()!=='production')
+    jsPath = components + "scripts/";
+    
     coffee = { 
         in : coffeePath,
         coffeeAll : coffeePath + "*.coffee",
         coffeeSources : [coffeePath + 'tagline.coffee'] 
     },
     connectOpts = {
-        root: source,
+        root: envOutputDir,
         livereload: true
     },
     css = {
         in : saas + "style.scss",
-        out : (!devBuild) ? cssDest : cssSource,
+        out : cssSource,
         watch : [saas + "*.scss"],
         compassOpts : 
            { 
                 sass : saas,
                 image : imageSource,
-                style : 'expanded'
+                style : sassStyle
         }
     },
    
     js = {
         in : jsPath,
         source : jsSource,
-        dest : jsDest,
         jsSources : [
                         jsPath + "rclick.js",
                         jsPath + "pixgrid.js",
@@ -61,7 +68,8 @@ var build = "builds/",
                       ]
         },
     html = {
-       in : source + "*.html"
+       in : envOutputDir + "*.html",
+       out : envOutputDir
        
     },
     json = {
@@ -81,7 +89,7 @@ gulp.task('compass',function(){
 });
 
 gulp.task('html',function(){
-   gulp.src(html.in).pipe (connect.reload());  
+   gulp.src(html.in).pipe(gulp.dest(html.out)).pipe (connect.reload());  
 });
 
 gulp.task('json',function(){
